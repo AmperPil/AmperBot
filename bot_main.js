@@ -22,7 +22,7 @@ var clientOptions = {
 	},
 	identity: {
 		username: 'AmperBot',
-		password: 'oauth:8rlu891g2jqpy18yrv9e2v74z8ooa3'
+		password: ''
 	},
 	channels: ['amperpil', 'kz_frew', 'amperbot', 'eidgod', 'feurigerilias']
 }
