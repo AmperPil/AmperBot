@@ -1,2 +1,4 @@
 node_modules/
-lib/config.jss
+lib/config.js
+.DS_Store
+lib/.DS_Store
