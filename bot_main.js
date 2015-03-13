@@ -4,7 +4,7 @@ var rates = require('./lib/rates');
 //Variables
 var userSpecialString;
 var chatCol;
-var botAdmins = ['amperpil', 'kz_frew', 'eidgod'];
+var botAdmins = ['amperpil', 'kz_frew', 'eidgod', 'feurigerilias'];
 
 //Date and time
 var d = new Date();
@@ -66,6 +66,9 @@ client.addListener('chat', function (channel, user, message) {
 	//Commands command
 	if (message.toLowerCase() === '&commands') {
 		rlimit.queueCommand(channel, function() { client.say(channel, 'The commands for this bot can be found at: http://bit.ly/AmperBotHelp'); });
+	}
+	if (message.toLowerCase() === '&github') {
+		rlimit.queueCommand(channel, function() { client.say(channel, 'The github repository for the bot can be found here: https://github.com/AmperPil/AmperBot'); });
 	}
 	//Join custom channel
 	if (message.toLowerCase().indexOf('&admin_join') === 0) {
