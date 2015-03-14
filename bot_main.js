@@ -1,23 +1,14 @@
+var fs = require('fs');
 var config = require('./lib/config');
 var rates = require('./lib/rates');
 var moment = require('moment-timezone');
+var rlimit = new rates(config.client);
 //Variables
 var userSpecialString;
 var chatCol;
-var botAdmins = ['amperpil', 'kz_frew', 'eidgod', 'feurigerilias'];
+//var botAdmins = ['amperpil', 'kz_frew', 'eidgod', 'feurigerilias'];
 
-//Date and time
-var d = new Date();
-var datetime = "The current date and time is: " + d.getDate() + "/"
-                                + (d.getMonth()+1)  + "/"
-                                + d.getFullYear() + " @ "
-                                + d.getHours() + ":"
-                                + d.getMinutes() + ":"
-                                + d.getSeconds();
-
-//Connection Info
-var rlimit = new rates(config);
-config.client.connect();
+config.client.connect(); //Connects to the twitch servers
 
 config.client.addListener('chat', function (channel, user, message) {
 	//Date + Time
@@ -33,7 +24,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	var twitTurbo = user.special.indexOf('turbo') > -1;
 	var twitView = user.special.indexOf(user) === -1;
 
-	console.log(time + ' ' + channel + ', ' + user.username + ': ' + message);
+	console.log(time + ' ' + channel + ', ' + user.username + ': ' + message); //Writes all of the messages to the console with the time, channel name and the user
 	/*
 	Level Command
 	*/
@@ -124,7 +115,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Set timezone
 	*/
 	else if (message.toLowerCase().indexOf('&time_set') === 0) {
-		var
+		//To be done
 	}
 	/*
 	Current Time
@@ -139,11 +130,11 @@ config.client.addListener('chat', function (channel, user, message) {
 	Ability to add admins to the bot through the chat.
 	*/
 	else if (message.toLowerCase().indexOf('&admin_add') === 0) {
-		if (botAdmins.indexOf(user.username) > -1) {
+		if (config.botAdmins.indexOf(user.username) > -1) {
 			var adminRecipent = message.replace('&admin_add ', '');
-			botAdmins.push(adminRecipent);
+			config.botAdmins.push(adminRecipent);
 			rlimit.queueCommand(channel, function() { config.client.say(channel, adminRecipent + ' has been added as an admin of the bot.'); });
-		} else if (botAdmins.indexOf(user.username) === -1) {
+		} else if (config.botAdmins.indexOf(user.username) === -1) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'You do not have the permission to do this command.'); });
 		} else {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Something went wrong, sorry! <3'); });
@@ -153,9 +144,9 @@ config.client.addListener('chat', function (channel, user, message) {
 	Check if you are an admin
 	*/
 	else if (message.toLowerCase().indexOf('&admin_check') === 0) {
-		if (botAdmins.indexOf(user.username) > -1) {
+		if (config.botAdmins.indexOf(user.username) > -1) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Congratulations! You are one of the admins! <3'); });
-		} else if (botAdmins.indexOf(user.username) === -1) {
+		} else if (config.botAdmins.indexOf(user.username) === -1) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Sorry, You are not one of the admins :('); });
 		} else {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Something went wrong, sorry! <3'); });
@@ -165,7 +156,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	List of admins
 	*/
 	else if (message.toLowerCase().indexOf('&admin_list') === 0) {
-		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The admins for the bot are: ' + botAdmins); });
+		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The admins for the bot are: ' + config.botAdmins); });
 	}
 	/*
 	Error Message
