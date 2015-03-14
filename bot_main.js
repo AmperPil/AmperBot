@@ -176,7 +176,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	/*
 	List of admins
 	*/
-	else if (message.toLowerCase().indexOf('&admin_list')) {
+	else if (message.toLowerCase().indexOf('&admin_list') === 0) {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The admins for the bot are: ' + botAdmins); });
 	}
 	/*
