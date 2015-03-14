@@ -13,6 +13,7 @@ var datetime = "The current date and time is: " + d.getDate() + "/"
                                 + d.getHours() + ":"
                                 + d.getMinutes() + ":"
                                 + d.getSeconds();
+var time = "[" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + "]";
 //Connection Info
 var rlimit = new rates(config);
 config.client.connect();
@@ -28,7 +29,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	var twitTurbo = user.special.indexOf('turbo') > -1;
 	var twitView = user.special.indexOf(user) === -1;
 
-	console.log(channel + ', ' + user.username + ': ' + message);
+	console.log(time + ' ' + channel + ', ' + user.username + ': ' + message);
 	//Level command
 	if (message.toLowerCase() === '&level') {
 		if (user.special.length === 1) { // If the user.special array is equal to 1, then set the special string and add on the first entry of the array.
