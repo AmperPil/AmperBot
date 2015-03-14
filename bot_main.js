@@ -1,4 +1,3 @@
-var fs = require('fs');
 var config = require('./lib/config');
 var rates = require('./lib/rates');
 var moment = require('moment-timezone');
