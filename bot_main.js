@@ -154,38 +154,54 @@ config.client.addListener('chat', function (channel, user, message) {
 	else if (message.toLowerCase() === '&admin_list') {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The admins for the bot are: ' + botAdmins); });
 	}
-	//Random Colour(Sorry S)
+	//Random Colour(Credit goes to S for the idea, and originally creating it in mIRC script)
 	var randomNum = Math.floor((Math.random() * 14) + 1);
-	if (randomNum === 1) {
-		chatCol = 'Blue';
-	} else if (randomNum === 2) {
-		chatCol = 'BlueViolet';
-	} else if (randomNum === 3) {
-		chatCol = 'CadetBlue';
-	} else if (randomNum === 4) {
-		chatCol = 'Chocolate';
-	} else if (randomNum === 5) {
-		chatCol = 'Coral';
-	} else if (randomNum === 6) {
-		chatCol = 'DodgerBlue';
-	} else if (randomNum === 7) {
-		chatCol = 'Firebrick';
-	} else if (randomNum === 8) {
-		chatCol = 'GoldenRod';
-	} else if (randomNum === 9) {
-		chatCol = 'Green';
-	} else if (randomNum === 10) {
-		chatCol = 'HotPink';
-	} else if (randomNum === 11) {
-		chatCol = 'OrangeRed';
-	} else if (randomNum === 12) {
-		chatCol = 'Red';
-	} else if (randomNum === 13) {
-		chatCol = 'SeaGreen';
-	} else if (randomNum === 14) {
-		chatCol = 'SpringGreen';
-	} else {
-		chatCol = 'YellowGreen';
+	switch(randomNum){
+		case 1:
+			chatCol = 'Blue';
+			break;
+		case 2:
+			chatCol = 'BlueViolet';
+			break;
+		case 3:
+			chatCol = 'CadetBlue';
+			break;
+		case 4:
+			chatCol = 'Chocolate';
+			break;
+		case 5:
+			chatCol = 'Coral';
+			break;
+		case 6:
+			chatCol = 'DodgerBlue';
+			break;
+		case 7:
+			chatCol = 'Firebrick';
+			break;
+		case 8:
+			chatCol = 'GoldenRod';
+			break;
+		case 9:
+			chatCol = 'Green';
+			break;
+		case 10:
+			chatCol = 'HotPink';
+			break;
+		case 11:
+			chatCol = 'OrangeRed';
+			break;
+		case 12:
+			chatCol = 'Red';
+			break;
+		case 13:
+			chatCol = 'SeaGreen';
+			break;
+		case 14:
+			chatCol = 'SpringGreen';
+			break;
+		default:
+			chatCol = 'YellowGreen';
+			break;
 	}
 	if (message.toLowerCase().indexOf('&') === 0) {
 		config.client.say(channel, '/color ' + chatCol);
