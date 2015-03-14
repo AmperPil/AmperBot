@@ -2,11 +2,11 @@
   "name": "AmperBot",
   "version": "0.0.1",
   "description": "A twitch chat bot made in nodeJS + twitch-irc",
-  "author" : "AmperPil AmperPil@gmail.com",
-  "license" : "MIT",
+  "author": "AmperPil AmperPil@gmail.com",
+  "license": "MIT",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/AmperPil/AmperBot"
+    "type": "git",
+    "url": "https://github.com/AmperPil/AmperBot"
   },
   "dependencies": {
     "async": "^0.9.0",
