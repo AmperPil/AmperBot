@@ -126,7 +126,6 @@ config.client.addListener('chat', function (channel, user, message) {
 		var timezoneInt = parseInt(timezone);
 		now.utcOffset(timezoneInt);
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z'))});
-		console.log(channel);
 	}
 	/*
 	All credit for the uptime command goes to schmoopiie. the gist can be found here: https://gist.github.com/Schmoopiie/410827edd6a47e76a2b4
@@ -152,10 +151,8 @@ config.client.addListener('chat', function (channel, user, message) {
 						var result  = hours + 'hours ' + (minutes < 10 ? '0' + minutes : minutes) + 'mins ' + (seconds  < 10 ? '0' + seconds : seconds) + 'secs';
 
 						rlimit.queueCommand(channel, function() { config.client.say(channel, broadcaster + ' has been online for ' + result + '.')});
-						console.log(currentBroad);
 					} else {
 						rlimit.queueCommand(channel, function() { config.client.say(channel, 'Sorry, but we are not live at the moment.')});
-						console.log(currentBroad);
 					}
 				} else {
 					rlimit.queueCommand(channel, function() { config.client.say(channel, 'Having issues with the Twitch API, try again later.')});
