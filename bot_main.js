@@ -30,8 +30,10 @@ config.client.addListener('chat', function (channel, user, message) {
 	var twitView = user.special.indexOf(user) === -1;
 
 	console.log(time + ' ' + channel + ', ' + user.username + ': ' + message);
-	//Level command
-	if (message.toLowerCase() === '&level') {
+	/*
+	Level Command
+	*/
+	if (message.toLowerCase().indexOf('&level') === 0) {
 		if (user.special.length === 1) { // If the user.special array is equal to 1, then set the special string and add on the first entry of the array.
 		userSpecialString = 'Your user level is: ' + user.special[0] + '.';
 		}
@@ -50,14 +52,18 @@ config.client.addListener('chat', function (channel, user, message) {
 		// then return/send the message in some way, if this was a function:
 		rlimit.queueCommand(channel, function() { config.client.say(channel, userSpecialString); }); // print the special string to the channel.
 	}
-	//Commands command
-	else if (message.toLowerCase() === '&commands') {
+	/*
+	Commands Command
+	*/
+	else if (message.toLowerCase().indexOf('&commands') === 0) {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The commands for this bot can be found at: http://bit.ly/AmperBotHelp'); });
 	}
 	else if (message.toLowerCase() === '&github') {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The github repository for the bot can be found here: https://github.com/AmperPil/AmperBot'); });
 	}
-	//Join custom channel
+	/*
+	Join custom channel
+	*/
 	else if (message.toLowerCase().indexOf('&admin_join') === 0) {
 		if (botAdmins.indexOf(user.username) > -1){
 			//this will make this new string only contain the entries to the command
@@ -68,13 +74,17 @@ config.client.addListener('chat', function (channel, user, message) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'You do not have the permissions to do this command.'); });
 		}
 	}
-	//Join user's channel
-	else if (message.toLowerCase() === '&join') {
+	/*
+	Join user's channel
+	*/
+	else if (message.toLowerCase().indexOf('&join') === 0) {
 		config.client.join(user.username);
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The bot has now joined your channel, Enjoy!'); });
 	}
-	//leave current channel
-	else if (message.toLowerCase() === '&leave') {
+	/*
+	&leave current channel
+	*/
+	else if (message.toLowerCase().indexOf('&leave') === 0) {
 		if (botAdmins.indexOf(user.username) > -1 || twitBroad) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'The bot is now going to leave your channel.'); });
 			config.client.part(channel);
@@ -84,7 +94,9 @@ config.client.addListener('chat', function (channel, user, message) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Something went wrong, sorry! <3'); });
 		}
 	}
-	//Hug command
+	/*
+	Hug someone!
+	*/
 	else if (message.toLowerCase().indexOf('&hug') === 0) {
 		if (user.special.indexOf('mod') >= 0 || botAdmins.indexOf(user.username) > -1){
 			var hugRecipent = message.replace('&hug ', '');
@@ -93,7 +105,9 @@ config.client.addListener('chat', function (channel, user, message) {
 			return;
 		}
 	}
-	//kill command
+	/*
+	Kill someone :(
+	*/
 	else if (message.toLowerCase().indexOf('&kill') === 0) {
 		if (user.special.indexOf('mod') >= 0 || botAdmins.indexOf(user.username) > -1){
 			var killRecipent = message.replace('&kill ', '');
@@ -102,8 +116,10 @@ config.client.addListener('chat', function (channel, user, message) {
 			return;
 		}
 	}
-	//Pyramid command
-	else if (message.toLowerCase() === '&pyramid') {
+	/*
+	Kappa Pyramid
+	*/
+	else if (message.toLowerCase().indexOf('&pyramid') === 0) {
 		if (user.special.indexOf('mod') >= 0 || botAdmins.indexOf(user.username) > -1)
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'Kappa'); });
 		setTimeout(function(){
@@ -125,11 +141,15 @@ config.client.addListener('chat', function (channel, user, message) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Kappa'); });
 		}, 6000);
 	}
-	//Time Command
-	else if (message.toLowerCase() === '&time') {
+	/*
+	Time in GMT 0
+	*/
+	else if (message.toLowerCase().indexOf('&time') === 0) {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, datetime + ' (GMT 0)'); });
 	}
-	//Ability to add admins to the bot through the chat.
+	/*
+	Ability to add admins to the bot through the chat.
+	*/
 	else if (message.toLowerCase().indexOf('&admin_add') === 0) {
 		if (botAdmins.indexOf(user.username) > -1) {
 			var adminRecipent = message.replace('&admin_add ', '');
@@ -141,8 +161,10 @@ config.client.addListener('chat', function (channel, user, message) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Something went wrong, sorry! <3'); });
 		}
 	}
-	//Check if user is in the admin list
-	else if (message.toLowerCase() === '&admin_check') {
+	/*
+	Check if you are an admin
+	*/
+	else if (message.toLowerCase().indexOf('&admin_check') === 0) {
 		if (botAdmins.indexOf(user.username) > -1) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Congratulations! You are one of the admins! <3'); });
 		} else if (botAdmins.indexOf(user.username) === -1) {
@@ -151,15 +173,21 @@ config.client.addListener('chat', function (channel, user, message) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Something went wrong, sorry! <3'); });
 		}
 	}
-	//Prints out the list of admins for the bot.
-	else if (message.toLowerCase() === '&admin_list') {
+	/*
+	List of admins
+	*/
+	else if (message.toLowerCase().indexOf('&admin_list')) {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The admins for the bot are: ' + botAdmins); });
 	}
-	//Error message
+	/*
+	Error Message
+	*/
 	else if (message.toLowerCase().indexOf('&') === 0) {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'Sorry, that is not a command. Please make sure you typed it correctly.') });
 	}
-	//Random Colour(Credit goes to S for the idea, and originally creating it in mIRC script)
+	/*
+	Random Colour(Credit goes to S for the idea, and originally creating it in mIRC script)
+	*/
 	var randomNum = Math.floor((Math.random() * 14) + 1);
 	switch(randomNum){
 		case 1:
