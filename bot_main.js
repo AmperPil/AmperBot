@@ -154,6 +154,10 @@ config.client.addListener('chat', function (channel, user, message) {
 	else if (message.toLowerCase() === '&admin_list') {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The admins for the bot are: ' + botAdmins); });
 	}
+	//Error message
+	else if (message.toLowerCase().indexOf('&') === 0) {
+		rlimit.queueCommand(channel, function() { config.client.say(channel, 'Sorry, that is not a command. Please make sure you typed it correctly.') });
+	}
 	//Random Colour(Credit goes to S for the idea, and originally creating it in mIRC script)
 	var randomNum = Math.floor((Math.random() * 14) + 1);
 	switch(randomNum){
