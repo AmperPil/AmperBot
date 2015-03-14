@@ -1,6 +1,8 @@
+var fs = require('fs');
+var api = require('twitch-irc-api');
 var config = require('./lib/config');
 var rates = require('./lib/rates');
-var moment = require('moment-timezone');
+var moment = require('moment');
 var rlimit = new rates(config.client);
 //Variables
 var userSpecialString;
@@ -59,9 +61,9 @@ config.client.addListener('chat', function (channel, user, message) {
 	Join custom channel
 	*/
 	else if (message.toLowerCase().indexOf('&admin_join') === 0) {
-		if (botAdmins.indexOf(user.username) > -1){
+		if (config.botAdmins.indexOf(user.username) > -1){
 			//this will make this new string only contain the entries to the command
-			var channelToJoin = message.replace('&join ', '');
+			var channelToJoin = message.replace('&admin_join ', '');
 			config.client.join(channelToJoin);
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'The bot has now joined ' + channelToJoin + ' Enjoy!'); });
 		} else {
@@ -79,10 +81,10 @@ config.client.addListener('chat', function (channel, user, message) {
 	&leave current channel
 	*/
 	else if (message.toLowerCase().indexOf('&leave') === 0) {
-		if (botAdmins.indexOf(user.username) > -1 || twitBroad) {
+		if (config.botAdmins.indexOf(user.username) > -1 || twitBroad) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'The bot is now going to leave your channel.'); });
 			config.client.part(channel);
-		} else if (botAdmins.indexOf(user.username) === -1) {
+		} else if (config.botAdmins.indexOf(user.username) === -1) {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'You do not have the permissions to do this command.'); });
 		} else {
 			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Something went wrong, sorry! <3'); });
@@ -92,7 +94,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Hug someone!
 	*/
 	else if (message.toLowerCase().indexOf('&hug') === 0) {
-		if (user.special.indexOf('mod') >= 0 || botAdmins.indexOf(user.username) > -1){
+		if (user.special.indexOf('mod') >= 0 || config.botAdmins.indexOf(user.username) > -1){
 			var hugRecipent = message.replace('&hug ', '');
 			rlimit.queueCommand(channel, function() { config.client.say(channel, '/me gives ' + hugRecipent + ' a big hug!'); });
 		} else {
@@ -103,7 +105,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Kill someone :(
 	*/
 	else if (message.toLowerCase().indexOf('&kill') === 0) {
-		if (user.special.indexOf('mod') >= 0 || botAdmins.indexOf(user.username) > -1){
+		if (user.special.indexOf('mod') >= 0 || config.botAdmins.indexOf(user.username) > -1){
 			var killRecipent = message.replace('&kill ', '');
 			rlimit.queueCommand(channel, function() { config.client.say(channel, '/me stabs ' + killRecipent + ' in the chest, killing them. RIP In Peace.'); });
 		} else {
@@ -124,6 +126,42 @@ config.client.addListener('chat', function (channel, user, message) {
 		var timezoneInt = parseInt(timezone);
 		now.utcOffset(timezoneInt);
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z'))});
+		console.log(channel);
+	}
+	/*
+	All credit for the uptime command goes to schmoopiie. the gist can be found here: https://gist.github.com/Schmoopiie/410827edd6a47e76a2b4
+	*/
+	else if (message.toLowerCase().indexOf('&uptime') === 0) {
+		var currentBroad = channel.replace('#', '')
+		api.call({
+				channel: null,
+				method: 'GET',
+				path: '/streams/' + currentBroad,
+				options: {}
+			},
+			function (err, statusCode, response) {
+				if (!err && statusCode === 200) {
+					if (response.stream) {
+						var broadcaster = response.stream['channel']['display_name'];
+						var currentDate = new Date(moment().toISOString());
+						var streamDate  = new Date(response.stream['created_at']);
+						var timeDiff    = new Date(moment.utc(moment(currentDate,"DD/MM/YYYY HH:mm:ss").diff(moment(streamDate,"DD/MM/YYYY HH:mm:ss"))).format("DD/MM/YYYY HH:mm:ss"));
+						var hours   = timeDiff.getHours();
+						var minutes = timeDiff.getMinutes();
+						var seconds = timeDiff.getSeconds();
+						var result  = hours + 'hours ' + (minutes < 10 ? '0' + minutes : minutes) + 'mins ' + (seconds  < 10 ? '0' + seconds : seconds) + 'secs';
+
+						rlimit.queueCommand(channel, function() { config.client.say(channel, broadcaster + ' has been online for ' + result + '.')});
+						console.log(currentBroad);
+					} else {
+						rlimit.queueCommand(channel, function() { config.client.say(channel, 'Sorry, but we are not live at the moment.')});
+						console.log(currentBroad);
+					}
+				} else {
+					rlimit.queueCommand(channel, function() { config.client.say(channel, 'Having issues with the Twitch API, try again later.')});
+				}
+			}
+		);
 	}
 	/*
 	Ability to add admins to the bot through the chat.
