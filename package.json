@@ -11,6 +11,7 @@
   "dependencies": {
     "moment": "^2.9.0",
     "moment-timezone": "^0.3.0",
-    "twitch-irc": "latest"
+    "twitch-irc": "latest",
+    "twitch-irc-api": "^1.0.1"
   }
 }
