@@ -1,5 +1,6 @@
 var config = require('./lib/config');
 var rates = require('./lib/rates');
+var moment = require('moment-timezone');
 //Variables
 var userSpecialString;
 var chatCol;
@@ -13,12 +14,15 @@ var datetime = "The current date and time is: " + d.getDate() + "/"
                                 + d.getHours() + ":"
                                 + d.getMinutes() + ":"
                                 + d.getSeconds();
-var time = "[" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + "]";
+
 //Connection Info
 var rlimit = new rates(config);
 config.client.connect();
 
 config.client.addListener('chat', function (channel, user, message) {
+	//Date + Time
+	var now = moment();
+	var time = "[" + now.format('HH:mm:ss') + "]";
 	//User Levels
 	var twitStaff = user.special.indexOf('staff') > -1;
 	var twitAdmin = user.special.indexOf('admin') > -1;
@@ -142,10 +146,19 @@ config.client.addListener('chat', function (channel, user, message) {
 		}, 6000);
 	}
 	/*
-	Time in GMT 0
+	Set timezone
+	*/
+	else if (message.toLowerCase().indexOf('&time_set') === 0) {
+
+	}
+	/*
+	Current Time
 	*/
 	else if (message.toLowerCase().indexOf('&time') === 0) {
-		rlimit.queueCommand(channel, function() { config.client.say(channel, datetime + ' (GMT 0)'); });
+		var timezone = message.replace('&time ', '');
+		var timezoneInt = parseInt(timezone);
+		now.utcOffset(timezoneInt);
+		rlimit.queueCommand(channel, function() { config.client.say(channel, 'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z'))});
 	}
 	/*
 	Ability to add admins to the bot through the chat.
