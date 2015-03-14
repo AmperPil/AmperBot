@@ -121,35 +121,10 @@ config.client.addListener('chat', function (channel, user, message) {
 		}
 	}
 	/*
-	Kappa Pyramid
-	*/
-	else if (message.toLowerCase().indexOf('&pyramid') === 0) {
-		if (user.special.indexOf('mod') >= 0 || botAdmins.indexOf(user.username) > -1)
-		rlimit.queueCommand(channel, function() { config.client.say(channel, 'Kappa'); });
-		setTimeout(function(){
-			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Kappa Kappa'); });
-		}, 1000);
-		setTimeout(function(){
-			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Kappa Kappa Kappa'); });
-		}, 2000);
-		setTimeout(function(){
-			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Kappa Kappa Kappa Kappa'); });
-		}, 3000);
-		setTimeout(function(){
-			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Kappa Kappa Kappa'); });
-		}, 4000);
-		setTimeout(function(){
-			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Kappa Kappa'); });
-		}, 5000);
-		setTimeout(function(){
-			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Kappa'); });
-		}, 6000);
-	}
-	/*
 	Set timezone
 	*/
 	else if (message.toLowerCase().indexOf('&time_set') === 0) {
-
+		var
 	}
 	/*
 	Current Time
