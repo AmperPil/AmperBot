@@ -1,10 +1,11 @@
+//Require me!
 var fs = require('fs');
 var api = require('twitch-irc-api');
 var config = require('./lib/config');
 var rates = require('./lib/rates');
 var moment = require('moment');
 var rlimit = new rates(config.client);
-//Variables
+//Define me!
 var userSpecialString;
 var chatCol;
 //var botAdmins = ['amperpil', 'kz_frew', 'eidgod', 'feurigerilias'];
@@ -191,6 +192,26 @@ config.client.addListener('chat', function (channel, user, message) {
 	*/
 	else if (message.toLowerCase().indexOf('&admin_list') === 0) {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The admins for the bot are: ' + config.botAdmins); });
+	}
+	else if (message.toLowerCase().indexOf('&rps') === 0) {
+		var rpsOption = message.toLowerCase().replace('&rps ', '');
+		var rpsRandNum = Math.floor((Math.random() * 90000) + 1);
+
+		if (rpsOption === 'scissors') {
+			if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'ROCK - Rock beats Scissors! You lose ' + user.username); }); }
+			if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'PAPER - Hmm, I lose. Congrats ' + user.username); }); }
+			if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'SCISSORS - Damn, its a draw.'); }); }
+		}
+		else if (rpsOption === 'paper') {
+			if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'SCISSORS - Scissors beats Paper! You lose ' + user.username); }); }
+			if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'ROCK - Hmm, I lose. Congrats ' + user.username); }); }
+			if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'PAPER - Damn, its a draw.'); }); }
+		}
+		else if (rpsOption === 'rock') {
+			if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'PAPER - Paper beats Rock! You lose ' + user.username); }); }
+			if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'SCISSORS - Hmm, I lose. Congrats ' + user.username); }); }
+			if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'ROCK - Damn, its a draw.'); }); }
+		}
 	}
 	/*
 	Error Message
