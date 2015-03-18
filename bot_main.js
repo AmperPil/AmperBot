@@ -14,6 +14,8 @@ config.client.connect(); //Connects to the twitch servers
 
 config.client.addListener('chat', function (channel, user, message) {
 	var chat = require('./lib/send_message');
+	var botAdminList = config.botAdmins.indexOf(user.username) > -1;
+	var notBotAdmin = config.botAdmins.indexOf(user.username) === -1;
 	//Date + Time
 	var now = moment();
 	var time = "[" + now.format('HH:mm:ss') + "]";
@@ -64,7 +66,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Join custom channel
 	*/
 	else if (message.toLowerCase().indexOf('&admin_join') === 0) {
-		if (config.botAdmins.indexOf(user.username) > -1){
+		if (botAdminList){
 			//this will make this new string only contain the entries to the command
 			var channelToJoin = message.replace('&admin_join ', '');
 			config.client.join(channelToJoin);
@@ -84,10 +86,10 @@ config.client.addListener('chat', function (channel, user, message) {
 	&leave current channel
 	*/
 	else if (message.toLowerCase().indexOf('&leave') === 0) {
-		if (config.botAdmins.indexOf(user.username) > -1 || twitBroad) {
+		if (botAdminList || twitBroad) {
 			chat.messageSay('The bot is now going to leave your channel.');
 			config.client.part(channel);
-		} else if (config.botAdmins.indexOf(user.username) === -1) {
+		} else if (notBotAdmin) {
 			chat.messageSay('You do not have the permissions to do this command.');
 		} else {
 			chat.messageSay('Something went wrong, sorry! <3');
@@ -97,7 +99,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Hug someone!
 	*/
 	else if (message.toLowerCase().indexOf('&hug') === 0) {
-		if (twitBroad || twitMod || config.botAdmins.indexOf(user.username) > -1){
+		if (twitBroad || twitMod || botAdminList){
 			var hugRecipent = message.replace('&hug ', '');
 			chat.messageSay('/me gives ' + hugRecipent + ' a big hug!');
 		} else {
@@ -108,7 +110,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Kill someone :(
 	*/
 	else if (message.toLowerCase().indexOf('&kill') === 0) {
-		if (twitBroad || twitMod || config.botAdmins.indexOf(user.username) > -1){
+		if (twitBroad || twitMod || botAdminList){
 			var killRecipent = message.replace('&kill ', '');
 			chat.messageSay('/me stabs ' + killRecipent + ' in the chest, killing them. RIP In Peace.');
 		} else {
@@ -119,8 +121,13 @@ config.client.addListener('chat', function (channel, user, message) {
 	Set timezone
 	*/
 	else if (message.toLowerCase().indexOf('&time_set') === 0) {
-		timeSet = message.replace('&time_set ', '');
-		chat.messageSay('The default timezone has been set to: ' + timeSet);
+		if (botAdminList) {
+			timeSet = message.replace('&time_set ', '');
+			chat.messageSay('The default timezone has been set to: ' + timeSet);
+		}
+		else if (notBotAdmin) {
+			chat.messageSay('Sorry! Only admins can do this command! <3');
+		}
 
 	}
 	else if (message.toLowerCase().indexOf('&time_offset') === 0) {
@@ -130,7 +137,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Current Time
 	*/
 	else if (message.toLowerCase().indexOf('&time') === 0) {
-		if (twitBroad || twitMod || config.botAdmins.indexOf(user.username) > -1) {
+		if (twitBroad || twitMod || botAdminList) {
 			var timezone = message.replace('&time ', '');
 			var timezoneInt = parseInt(timezone);
 			var timeSetInt = parseInt(timeSet);
@@ -186,11 +193,11 @@ config.client.addListener('chat', function (channel, user, message) {
 	Ability to add admins to the bot through the chat.
 	*/
 	else if (message.toLowerCase().indexOf('&admin_add') === 0) {
-		if (config.botAdmins.indexOf(user.username) > -1) {
+		if (botAdminList) {
 			var adminRecipent = message.replace('&admin_add ', '');
 			config.botAdmins.push(adminRecipent);
 			chat.messageSay(adminRecipent + ' has been added as an admin of the bot.');
-		} else if (config.botAdmins.indexOf(user.username) === -1) {
+		} else if (notBotAdmin) {
 			chat.messageSay('You do not have the permission to do this command.');
 		} else {
 			chat.messageSay('Something went wrong, sorry! <3');
@@ -200,9 +207,9 @@ config.client.addListener('chat', function (channel, user, message) {
 	Check if you are an admin
 	*/
 	else if (message.toLowerCase().indexOf('&admin_check') === 0) {
-		if (config.botAdmins.indexOf(user.username) > -1) {
+		if (botAdminList) {
 			chat.messageSay('Congratulations! You are one of the admins! <3');
-		} else if (config.botAdmins.indexOf(user.username) === -1) {
+		} else if (notBotAdmin) {
 			chat.messageSay('Sorry, You are not one of the admins :(');
 		} else {
 			chat.messageSay('Something went wrong, sorry! <3');
@@ -215,7 +222,7 @@ config.client.addListener('chat', function (channel, user, message) {
 		chat.messageSay('The admins for the bot are: ' + config.botAdmins);
 	}
 	else if (message.toLowerCase().indexOf('&rps') === 0) {
-		if (twitBroad || twitMod || config.botAdmins.indexOf(user.username) > -1) {
+		if (twitBroad || twitMod || botAdminList) {
 			var rpsOption = message.toLowerCase().replace('&rps ', '');
 			var rpsRandNum = Math.floor((Math.random() * 90000) + 1);
 
