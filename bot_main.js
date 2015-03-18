@@ -14,6 +14,7 @@ config.client.connect(); //Connects to the twitch servers
 
 config.client.addListener('chat', function (channel, user, message) {
 	var chat = require('./lib/send_message');
+	var comDetect = require('./lib/command_detect');
 	var botAdminList = config.botAdmins.indexOf(user.username) > -1;
 	var notBotAdmin = config.botAdmins.indexOf(user.username) === -1;
 	//Date + Time
@@ -56,7 +57,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	/*
 	Commands Command
 	*/
-	else if (message.toLowerCase().indexOf('&commands') === 0) {
+	else if (comDetect.comIndex('&commands')) {
 		chat.messageSay('The commands for this bot can be found at: http://bit.ly/AmperBotHelp');
 	}
 	else if (message.toLowerCase() === '&github') {
