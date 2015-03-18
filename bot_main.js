@@ -95,7 +95,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Hug someone!
 	*/
 	else if (message.toLowerCase().indexOf('&hug') === 0) {
-		if (user.special.indexOf('mod') >= 0 || config.botAdmins.indexOf(user.username) > -1){
+		if (twitBroad || twitMod || config.botAdmins.indexOf(user.username) > -1){
 			var hugRecipent = message.replace('&hug ', '');
 			rlimit.queueCommand(channel, function() { config.client.say(channel, '/me gives ' + hugRecipent + ' a big hug!'); });
 		} else {
@@ -106,7 +106,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Kill someone :(
 	*/
 	else if (message.toLowerCase().indexOf('&kill') === 0) {
-		if (user.special.indexOf('mod') >= 0 || config.botAdmins.indexOf(user.username) > -1){
+		if (twitBroad || twitMod || config.botAdmins.indexOf(user.username) > -1){
 			var killRecipent = message.replace('&kill ', '');
 			rlimit.queueCommand(channel, function() { config.client.say(channel, '/me stabs ' + killRecipent + ' in the chest, killing them. RIP In Peace.'); });
 		} else {
@@ -123,10 +123,12 @@ config.client.addListener('chat', function (channel, user, message) {
 	Current Time
 	*/
 	else if (message.toLowerCase().indexOf('&time') === 0) {
-		var timezone = message.replace('&time ', '');
-		var timezoneInt = parseInt(timezone);
-		now.utcOffset(timezoneInt);
-		rlimit.queueCommand(channel, function() { config.client.say(channel, 'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z'))});
+		if (twitBroad || twitMod || config.botAdmins.indexOf(user.username) > -1) {
+			var timezone = message.replace('&time ', '');
+			var timezoneInt = parseInt(timezone);
+			now.utcOffset(timezoneInt);
+			rlimit.queueCommand(channel, function() { config.client.say(channel, 'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z'))});
+		}
 	}
 	/*
 	All credit for the uptime command goes to schmoopiie. the gist can be found here: https://gist.github.com/Schmoopiie/410827edd6a47e76a2b4
@@ -194,26 +196,28 @@ config.client.addListener('chat', function (channel, user, message) {
 		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The admins for the bot are: ' + config.botAdmins); });
 	}
 	else if (message.toLowerCase().indexOf('&rps') === 0) {
-		var rpsOption = message.toLowerCase().replace('&rps ', '');
-		var rpsRandNum = Math.floor((Math.random() * 90000) + 1);
+		if (twitBroad || twitMod || config.botAdmins.indexOf(user.username) > -1) {
+			var rpsOption = message.toLowerCase().replace('&rps ', '');
+			var rpsRandNum = Math.floor((Math.random() * 90000) + 1);
 
-		if (rpsOption === 'scissors') {
-			if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'ROCK - Rock beats Scissors! You lose ' + user.username); }); }
-			if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'PAPER - Hmm, I lose. Congrats ' + user.username); }); }
-			if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'SCISSORS - Damn, its a draw.'); }); }
-		}
-		else if (rpsOption === 'paper') {
-			if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'ROCK - Hmm, I lose. Congrats ' + user.username); }); }
-			if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'PAPER - Damn, its a draw.'); }); }
-			if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'SCISSORS - Scissors beats Paper! You lose ' + user.username); }); }
-		}
-		else if (rpsOption === 'rock') {
-			if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'ROCK - Damn, its a draw.'); }); }
-			if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'PAPER - Paper beats Rock! You lose ' + user.username); }); }
-			if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'SCISSORS - Hmm, I lose. Congrats ' + user.username); }); }
-		}
-		else {
-			rlimit.queueCommand(channel, function() { config.client.say(channel, 'Please choose either Paper, rock, or scissors.'); });
+			if (rpsOption === 'scissors') {
+				if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'ROCK - Rock beats Scissors! You lose ' + user.username); }); }
+				if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'PAPER - Hmm, I lose. Congrats ' + user.username); }); }
+				if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'SCISSORS - Damn, its a draw.'); }); }
+			}
+			else if (rpsOption === 'paper') {
+				if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'ROCK - Hmm, I lose. Congrats ' + user.username); }); }
+				if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'PAPER - Damn, its a draw.'); }); }
+				if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'SCISSORS - Scissors beats Paper! You lose ' + user.username); }); }
+			}
+			else if (rpsOption === 'rock') {
+				if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'ROCK - Damn, its a draw.'); }); }
+				if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'PAPER - Paper beats Rock! You lose ' + user.username); }); }
+				if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel, 'SCISSORS - Hmm, I lose. Congrats ' + user.username); }); }
+			}
+			else {
+				rlimit.queueCommand(channel, function() { config.client.say(channel, 'Please choose either Paper, rock, or scissors.'); });
+			}
 		}
 	}
 	/*
