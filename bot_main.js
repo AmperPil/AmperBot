@@ -8,6 +8,7 @@ var rlimit = new rates(config.client);
 //Define me!
 var userSpecialString;
 var chatCol;
+var timeSet;
 //var botAdmins = ['amperpil', 'kz_frew', 'eidgod', 'feurigerilias'];
 
 config.client.connect(); //Connects to the twitch servers
@@ -117,7 +118,12 @@ config.client.addListener('chat', function (channel, user, message) {
 	Set timezone
 	*/
 	else if (message.toLowerCase().indexOf('&time_set') === 0) {
-		//To be done
+		timeSet = message.replace('&time_set ', '');
+		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The default timezone has been set to: ' + timeSet); });
+
+	}
+	else if (message.toLowerCase().indexOf('&time_offset') === 0) {
+		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The current offset is: ' + timeSet); });
 	}
 	/*
 	Current Time
@@ -126,8 +132,20 @@ config.client.addListener('chat', function (channel, user, message) {
 		if (twitBroad || twitMod || config.botAdmins.indexOf(user.username) > -1) {
 			var timezone = message.replace('&time ', '');
 			var timezoneInt = parseInt(timezone);
-			now.utcOffset(timezoneInt);
-			rlimit.queueCommand(channel, function() { config.client.say(channel, 'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z'))});
+			var timeSetInt = parseInt(timeSet);
+
+
+			if (timezone.toLowerCase() === '&time') {
+				now.utcOffset(timeSetInt);
+				rlimit.queueCommand(channel, function() { config.client.say(channel, 'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z')); });
+			}
+			else if (timezone != '') {
+				now.utcOffset(timezoneInt);
+				rlimit.queueCommand(channel, function() { config.client.say(channel, 'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z')); });
+			}
+			else {
+				rlimit.queueCommand(channel, function() { config.client.say(channel, 'Something went wrong. Sorry! <3'); });
+			}
 		}
 	}
 	/*
