@@ -3,6 +3,8 @@ var fs = require('fs');
 var api = require('twitch-irc-api');
 var config = require('./lib/config');
 var moment = require('moment');
+var rates = require('./lib/rates');
+var rlimit = new rates(config.client);
 
 //Define me!
 var userSpecialString;
@@ -13,8 +15,8 @@ var timeSet;
 config.client.connect(); //Connects to the twitch servers
 
 config.client.addListener('chat', function (channel, user, message) {
-	var chat = require('./lib/send_message');
-	var comDetect = require('./lib/command_detect');
+	//var chat = require('./lib/send_message');
+	//var comDetect = require('./lib/command_detect');
 	var botAdminList = config.botAdmins.indexOf(user.username) > -1;
 	var notBotAdmin = config.botAdmins.indexOf(user.username) === -1;
 	//Date + Time
@@ -52,16 +54,17 @@ config.client.addListener('chat', function (channel, user, message) {
 			userSpecialString += '.'
 		}
 		// then return/send the message in some way, if this was a function:
-		chat.messageSay(userSpecialString); // print the special string to the channel.
+		rlimit.queueCommand(channel, function() { config.client.say(channel, userSpecialString ) }); // print the special string to the channel.
 	}
 	/*
 	Commands Command
 	*/
-	else if (comDetect.comIndex('&commands')) {
-		chat.messageSay('The commands for this bot can be found at: http://bit.ly/AmperBotHelp');
+	else if (message.toLowerCase().indexOf('&commands') === 0) {
+		//chat.messageSay('The commands for this bot can be found at: http://bit.ly/AmperBotHelp');
+		rlimit.queueCommand(channel, function() { config.client.say(channel, 'The commands for this bot can be found at: http://bit.ly/AmperBotHelp'); });
 	}
 	else if (message.toLowerCase() === '&github') {
-		chat.messageSay('The github repository for the bot can be found here: https://github.com/AmperPil/AmperBot');
+		rlimit.queueCommand(channel, function() { config.client.say(channel,'The github repository for the bot can be found here: https://github.com/AmperPil/AmperBot') });
 	}
 	/*
 	Join custom channel
@@ -71,9 +74,9 @@ config.client.addListener('chat', function (channel, user, message) {
 			//this will make this new string only contain the entries to the command
 			var channelToJoin = message.replace('&admin_join ', '');
 			config.client.join(channelToJoin);
-			chat.messageSay('The bot has now joined ' + channelToJoin + ' Enjoy!');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'The bot has now joined ' + channelToJoin + ' Enjoy!'); });
 		} else {
-			chat.messageSay('You do not have the permissions to do this command.');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'You do not have the permissions to do this command.'); });
 		}
 	}
 	/*
@@ -81,19 +84,19 @@ config.client.addListener('chat', function (channel, user, message) {
 	*/
 	else if (message.toLowerCase().indexOf('&join') === 0) {
 		config.client.join(user.username);
-		chat.messageSay('The bot has now joined your channel, Enjoy!');
+		rlimit.queueCommand(channel, function() { config.client.say(channel,'The bot has now joined your channel, Enjoy!'); });
 	}
 	/*
 	&leave current channel
 	*/
 	else if (message.toLowerCase().indexOf('&leave') === 0) {
 		if (botAdminList || twitBroad) {
-			chat.messageSay('The bot is now going to leave your channel.');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'The bot is now going to leave your channel.'); });
 			config.client.part(channel);
 		} else if (notBotAdmin) {
-			chat.messageSay('You do not have the permissions to do this command.');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'You do not have the permissions to do this command.'); });
 		} else {
-			chat.messageSay('Something went wrong, sorry! <3');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'Something went wrong, sorry! <3'); });
 		}
 	}
 	/*
@@ -102,7 +105,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	else if (message.toLowerCase().indexOf('&hug') === 0) {
 		if (twitBroad || twitMod || botAdminList){
 			var hugRecipent = message.replace('&hug ', '');
-			chat.messageSay('/me gives ' + hugRecipent + ' a big hug!');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'/me gives ' + hugRecipent + ' a big hug!'); });
 		} else {
 			return;
 		}
@@ -113,7 +116,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	else if (message.toLowerCase().indexOf('&kill') === 0) {
 		if (twitBroad || twitMod || botAdminList){
 			var killRecipent = message.replace('&kill ', '');
-			chat.messageSay('/me stabs ' + killRecipent + ' in the chest, killing them. RIP In Peace.');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'/me stabs ' + killRecipent + ' in the chest, killing them. RIP In Peace.'); });
 		} else {
 			return;
 		}
@@ -124,15 +127,15 @@ config.client.addListener('chat', function (channel, user, message) {
 	else if (message.toLowerCase().indexOf('&time_set') === 0) {
 		if (botAdminList) {
 			timeSet = message.replace('&time_set ', '');
-			chat.messageSay('The default timezone has been set to: ' + timeSet);
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'The default timezone has been set to: ' + timeSet); });
 		}
 		else if (notBotAdmin) {
-			chat.messageSay('Sorry! Only admins can do this command! <3');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'Sorry! Only admins can do this command! <3'); });
 		}
 
 	}
 	else if (message.toLowerCase().indexOf('&time_offset') === 0) {
-		chat.messageSay('The current offset is: ' + timeSet);
+		rlimit.queueCommand(channel, function() { config.client.say(channel,'The current offset is: ' + timeSet); });
 	}
 	/*
 	Current Time
@@ -146,14 +149,14 @@ config.client.addListener('chat', function (channel, user, message) {
 
 			if (timezone.toLowerCase() === '&time') {
 				now.utcOffset(timeSetInt);
-				chat.messageSay('It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z'));
+				rlimit.queueCommand(channel, function() { config.client.say(channel,'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z')); });
 			}
 			else if (timezone != '') {
 				now.utcOffset(timezoneInt);
-				chat.messageSay('It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z'));
+				rlimit.queueCommand(channel, function() { config.client.say(channel,'It is currently: ' + now.format('DD-MM-YYYY @ HH:mm:ss Z')); });
 			}
 			else {
-				chat.messageSay('Something went wrong. Sorry! <3');
+				rlimit.queueCommand(channel, function() { config.client.say(channel,'Something went wrong. Sorry! <3'); });
 			}
 		}
 	}
@@ -180,12 +183,12 @@ config.client.addListener('chat', function (channel, user, message) {
 						var seconds = timeDiff.getSeconds();
 						var result  = hours + 'hours ' + (minutes < 10 ? '0' + minutes : minutes) + 'mins ' + (seconds  < 10 ? '0' + seconds : seconds) + 'secs';
 
-						chat.messageSay(broadcaster + ' has been online for ' + result + '.');
+						rlimit.queueCommand(channel, function() { config.client.say(channel,broadcaster + ' has been online for ' + result + '.'); });
 					} else {
-						chat.messageSay('Sorry, but we are not live at the moment.');
+						rlimit.queueCommand(channel, function() { config.client.say(channel,'Sorry, but we are not live at the moment.'); });
 					}
 				} else {
-					chat.messageSay('Having issues with the Twitch API, try again later.');
+					rlimit.queueCommand(channel, function() { config.client.say(channel,'Having issues with the Twitch API, try again later.'); });
 				}
 			}
 		);
@@ -197,11 +200,11 @@ config.client.addListener('chat', function (channel, user, message) {
 		if (botAdminList) {
 			var adminRecipent = message.replace('&admin_add ', '');
 			config.botAdmins.push(adminRecipent);
-			chat.messageSay(adminRecipent + ' has been added as an admin of the bot.');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,adminRecipent + ' has been added as an admin of the bot.'); });
 		} else if (notBotAdmin) {
-			chat.messageSay('You do not have the permission to do this command.');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'You do not have the permission to do this command.'); });
 		} else {
-			chat.messageSay('Something went wrong, sorry! <3');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'Something went wrong, sorry! <3'); });
 		}
 	}
 	/*
@@ -209,18 +212,18 @@ config.client.addListener('chat', function (channel, user, message) {
 	*/
 	else if (message.toLowerCase().indexOf('&admin_check') === 0) {
 		if (botAdminList) {
-			chat.messageSay('Congratulations! You are one of the admins! <3');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'Congratulations! You are one of the admins! <3'); });
 		} else if (notBotAdmin) {
-			chat.messageSay('Sorry, You are not one of the admins :(');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'Sorry, You are not one of the admins :('); });
 		} else {
-			chat.messageSay('Something went wrong, sorry! <3');
+			rlimit.queueCommand(channel, function() { config.client.say(channel,'Something went wrong, sorry! <3'); });
 		}
 	}
 	/*
 	List of admins
 	*/
 	else if (message.toLowerCase().indexOf('&admin_list') === 0) {
-		chat.messageSay('The admins for the bot are: ' + config.botAdmins);
+		rlimit.queueCommand(channel, function() { config.client.say(channel,'The admins for the bot are: ' + config.botAdmins); });
 	}
 	else if (message.toLowerCase().indexOf('&rps') === 0) {
 		if (twitBroad || twitMod || botAdminList) {
@@ -228,22 +231,22 @@ config.client.addListener('chat', function (channel, user, message) {
 			var rpsRandNum = Math.floor((Math.random() * 90000) + 1);
 
 			if (rpsOption === 'scissors') {
-				if (rpsRandNum > 0 && rpsRandNum < 30000) { chat.messageSay('ROCK - Rock beats Scissors! You lose ' + user.username); }
-				if (rpsRandNum > 29000 && rpsRandNum < 60000) { chat.messageSay('PAPER - Hmm, I lose. Congrats ' + user.username); }
-				if (rpsRandNum > 59000 && rpsRandNum < 91000) { chat.messageSay('SCISSORS - Damn, its a draw.'); }
+				if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel,'ROCK - Rock beats Scissors! You lose ' + user.username); }); }
+				if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel,'PAPER - Hmm, I lose. Congrats ' + user.username); }); }
+				if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel,'SCISSORS - Damn, its a draw.'); }); }
 			}
 			else if (rpsOption === 'paper') {
-				if (rpsRandNum > 0 && rpsRandNum < 30000) { chat.messageSay('ROCK - Hmm, I lose. Congrats ' + user.username); }
-				if (rpsRandNum > 29000 && rpsRandNum < 60000) { chat.messageSay('PAPER - Damn, its a draw.'); }
-				if (rpsRandNum > 59000 && rpsRandNum < 91000) { chat.messageSay('SCISSORS - Scissors beats Paper! You lose ' + user.username); }
+				if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel,'ROCK - Hmm, I lose. Congrats ' + user.username); }); }
+				if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel,'PAPER - Damn, its a draw.'); }); }
+				if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel,'SCISSORS - Scissors beats Paper! You lose ' + user.username); }); }
 			}
 			else if (rpsOption === 'rock') {
-				if (rpsRandNum > 0 && rpsRandNum < 30000) { chat.messageSay('ROCK - Damn, its a draw.'); }
-				if (rpsRandNum > 29000 && rpsRandNum < 60000) { chat.messageSay('PAPER - Paper beats Rock! You lose ' + user.username); }
-				if (rpsRandNum > 59000 && rpsRandNum < 91000) { chat.messageSay('SCISSORS - Hmm, I lose. Congrats ' + user.username); }
+				if (rpsRandNum > 0 && rpsRandNum < 30000) { rlimit.queueCommand(channel, function() { config.client.say(channel,'ROCK - Damn, its a draw.'); }); }
+				if (rpsRandNum > 29000 && rpsRandNum < 60000) { rlimit.queueCommand(channel, function() { config.client.say(channel,'PAPER - Paper beats Rock! You lose ' + user.username); }); }
+				if (rpsRandNum > 59000 && rpsRandNum < 91000) { rlimit.queueCommand(channel, function() { config.client.say(channel,'SCISSORS - Hmm, I lose. Congrats ' + user.username); }); }
 			}
 			else {
-				chat.messageSay('Please choose either Paper, rock, or scissors.');
+				rlimit.queueCommand(channel, function() { config.client.say(channel,'Please choose either Paper, rock, or scissors.'); });
 			}
 		}
 	}
@@ -251,7 +254,7 @@ config.client.addListener('chat', function (channel, user, message) {
 	Error Message
 	*/
 	else if (message.toLowerCase().indexOf('&') === 0) {
-		chat.messageSay('Sorry, that is not a command. Please make sure you typed it correctly.');
+		rlimit.queueCommand(channel, function() { config.client.say(channel,'Sorry, that is not a command. Please make sure you typed it correctly.'); });
 	}
 	/*
 	Random Colour(Credit goes to S for the idea, and originally creating it in mIRC script)
